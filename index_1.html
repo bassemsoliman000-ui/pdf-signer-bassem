@@ -1,0 +1,1534 @@
+<title>قلم التوقيع</title>
+<style>
+  :root {
+    --bg: #EEF0F5;
+    --surface: #FFFFFF;
+    --surface-2: #E5E8F0;
+    --surface-3: #DBDFEA;
+    --border: #D2D6E2;
+    --text: #14181F;
+    --text-muted: #5B6272;
+    --accent: #2A4B94;
+    --accent-2: #4665B8;
+    --accent-soft: #E4E9F8;
+    --danger: #A93F2A;
+    --danger-soft: #F7E7E2;
+    --success: #276B4E;
+    --success-soft: #E1F0E7;
+    --gold: #A87A28;
+    --ink-black: #191B1F;
+    --ink-blue: #1E3E8C;
+    --radius-sm: 7px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow-1: 0 1px 2px rgba(20,24,31,0.07), 0 6px 16px rgba(20,24,31,0.07);
+    --shadow-2: 0 2px 6px rgba(20,24,31,0.12), 0 10px 28px rgba(20,24,31,0.14);
+    --font-display: 'Cairo', Tahoma, sans-serif;
+    --font-body: 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12141A;
+      --surface: #1B1E27;
+      --surface-2: #232733;
+      --surface-3: #2B303E;
+      --border: #343A49;
+      --text: #E9EBF1;
+      --text-muted: #9AA1B4;
+      --accent: #7C9AE6;
+      --accent-2: #9BB3EE;
+      --accent-soft: #232D4C;
+      --danger: #E2917C;
+      --danger-soft: #3B2620;
+      --success: #7FCBA6;
+      --success-soft: #1E3A2C;
+      --gold: #D8B466;
+      --ink-black: #EDEFF3;
+      --ink-blue: #8FACEF;
+      --shadow-1: 0 1px 2px rgba(0,0,0,0.35), 0 6px 20px rgba(0,0,0,0.35);
+      --shadow-2: 0 4px 10px rgba(0,0,0,0.4), 0 14px 32px rgba(0,0,0,0.45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12141A;
+    --surface: #1B1E27;
+    --surface-2: #232733;
+    --surface-3: #2B303E;
+    --border: #343A49;
+    --text: #E9EBF1;
+    --text-muted: #9AA1B4;
+    --accent: #7C9AE6;
+    --accent-2: #9BB3EE;
+    --accent-soft: #232D4C;
+    --danger: #E2917C;
+    --danger-soft: #3B2620;
+    --success: #7FCBA6;
+    --success-soft: #1E3A2C;
+    --gold: #D8B466;
+    --ink-black: #EDEFF3;
+    --ink-blue: #8FACEF;
+    --shadow-1: 0 1px 2px rgba(0,0,0,0.35), 0 6px 20px rgba(0,0,0,0.35);
+    --shadow-2: 0 4px 10px rgba(0,0,0,0.4), 0 14px 32px rgba(0,0,0,0.45);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; overflow-x: hidden; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+  button { font-family: inherit; touch-action: manipulation; }
+  ::selection { background: var(--accent-soft); }
+
+  .app {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 16px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 4px 2px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    font-size: 26px;
+    width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent-soft);
+    border-radius: var(--radius-md);
+    flex: none;
+  }
+  .brand-text h1 { font-size: 19px; font-weight: 800; letter-spacing: 0.2px; }
+  .brand-text .tagline { margin: 2px 0 0; font-size: 12.5px; color: var(--text-muted); }
+  .privacy-badge {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--success-soft);
+    color: var(--success);
+    border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    max-width: 340px;
+  }
+  .privacy-badge svg { flex: none; width: 15px; height: 15px; }
+
+  /* ---------- Dropzone ---------- */
+  .dropzone-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 30px 16px;
+  }
+  .dropzone {
+    width: 100%;
+    max-width: 560px;
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    padding: 46px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, transform .15s ease;
+    box-shadow: var(--shadow-1);
+  }
+  .dropzone:hover, .dropzone.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .dropzone svg { width: 42px; height: 42px; color: var(--accent); }
+  .dz-title { font-size: 16px; font-weight: 700; margin: 4px 0 0; }
+  .dz-sub { font-size: 13px; color: var(--text-muted); margin: 0; }
+  .load-status { font-size: 12.5px; color: var(--text-muted); min-height: 16px; }
+  .load-status.err { color: var(--danger); font-weight: 600; }
+
+  /* ---------- Workspace ---------- */
+  .workspace {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  @media (max-width: 780px) {
+    .workspace { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .panel-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .tabs { display: flex; gap: 4px; background: var(--surface-2); border-radius: var(--radius-sm); padding: 3px; }
+  .tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 7px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .tab-btn.active { background: var(--surface); color: var(--accent); box-shadow: var(--shadow-1); }
+
+  .tab-panel { display: none; flex-direction: column; gap: 10px; }
+  .tab-panel.active { display: flex; }
+
+  .ink-row { display: flex; align-items: center; gap: 8px; }
+  .ink-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+  .swatch {
+    width: 22px; height: 22px; border-radius: 999px; border: 2px solid transparent;
+    cursor: pointer; padding: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+  }
+  .swatch.active { border-color: var(--accent); }
+
+  #drawCanvas {
+    width: 100%; height: 130px;
+    background:
+      linear-gradient(var(--surface-2) 1px, transparent 1px) 0 78%/100% 1px no-repeat,
+      var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    touch-action: none;
+    cursor: crosshair;
+  }
+
+  .field-row { display: flex; gap: 8px; }
+  input[type="text"].text-input {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    padding: 8px 10px;
+    font-size: 14px;
+    font-family: var(--font-body);
+  }
+  input[type="text"].text-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .font-choice { display: flex; gap: 8px; }
+  .font-swatch {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 10px 6px;
+    text-align: center;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text);
+    min-height: 46px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .font-swatch.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
+  .upload-drop {
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 10px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .upload-drop:hover { border-color: var(--accent); }
+  .checkbox-row { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text-muted); }
+  .checkbox-row input { accent-color: var(--accent); }
+
+  .primary-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s ease, transform .1s ease;
+  }
+  .primary-btn:hover:not(:disabled) { background: var(--accent-2); }
+  .primary-btn:disabled { opacity: .45; cursor: not-allowed; }
+  .primary-btn:active:not(:disabled) { transform: translateY(1px); }
+
+  .ghost-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .lib-section { display: flex; flex-direction: column; gap: 8px; }
+  .lib-empty { font-size: 12px; color: var(--text-muted); background: var(--surface-2); padding: 10px; border-radius: var(--radius-sm); text-align: center; }
+  .lib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .lib-card {
+    position: relative;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background:
+      conic-gradient(var(--surface-2) 90deg, transparent 90deg 180deg, var(--surface-2) 180deg 270deg, transparent 270deg) top left / 12px 12px,
+      var(--surface);
+    padding: 6px;
+    cursor: pointer;
+    height: 56px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lib-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+  .lib-card img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .lib-del {
+    position: absolute; top: -6px; inset-inline-end: -6px;
+    width: 18px; height: 18px; border-radius: 999px;
+    background: var(--danger); color: #fff; border: none;
+    font-size: 11px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .active-hint {
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+    padding: 8px 8px 8px 10px;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .active-hint.show { display: flex; }
+  .active-hint-cancel {
+    flex: none;
+    border: none;
+    background: var(--surface);
+    color: var(--accent);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .active-hint-cancel:hover { background: var(--accent); color: #fff; }
+
+  .exit-place-btn {
+    flex: none;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .exit-place-btn:hover { background: var(--accent); color: #fff; }
+
+  /* ---------- Stage ---------- */
+  .stage-area { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .stage-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 8px 10px;
+    box-shadow: var(--shadow-1);
+  }
+  .icon-btn {
+    width: 30px; height: 30px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .icon-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .icon-btn:disabled { opacity: .4; cursor: not-allowed; }
+  #pageIndicator { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 92px; text-align: center; }
+  .stage-hint { font-size: 12px; color: var(--text-muted); flex: 1; min-width: 140px; }
+  .stage-hint.armed { color: var(--accent); font-weight: 700; }
+
+  .page-stage-wrap {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+  }
+  .page-stage {
+    position: relative;
+    direction: ltr;
+    background: #fff;
+    box-shadow: var(--shadow-2);
+    border-radius: 2px;
+    flex: none;
+  }
+  .page-stage canvas { display: block; border-radius: 2px; }
+  .page-outline-fallback {
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 20px; font-size: 12.5px; color: var(--text-muted);
+    background: repeating-linear-gradient(135deg, #fafafa, #fafafa 10px, #f3f3f3 10px, #f3f3f3 20px);
+  }
+
+  .placement {
+    position: absolute;
+    border: 1.5px dashed color-mix(in srgb, var(--accent) 55%, transparent);
+    cursor: move;
+    touch-action: none;
+  }
+  .placement img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none; }
+  .placement.selected { border-style: solid; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .placement .del {
+    position: absolute; top: -13px; right: -13px;
+    width: 26px; height: 26px; border-radius: 999px;
+    background: var(--danger); color: #fff; border: 2px solid var(--surface);
+    font-size: 13px; cursor: pointer; display: none;
+    align-items: center; justify-content: center; line-height: 1;
+  }
+  .placement .handle {
+    position: absolute; bottom: -8px; right: -8px;
+    width: 16px; height: 16px; border-radius: 4px;
+    background: var(--accent); border: 2px solid var(--surface);
+    cursor: nwse-resize; display: none;
+    touch-action: none;
+  }
+  .placement .handle::before {
+    /* invisible, larger hit area so the handle is easy to grab */
+    content: "";
+    position: absolute;
+    inset: -10px;
+  }
+  .placement.selected .del, .placement.selected .handle { display: flex; }
+  .placement.selected .handle { display: block; }
+
+  .placement .size-toolbar {
+    position: absolute;
+    top: -44px; left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    align-items: center;
+    gap: 3px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px;
+    box-shadow: var(--shadow-1);
+    white-space: nowrap;
+  }
+  .placement.selected .size-toolbar { display: flex; }
+  .size-toolbar button {
+    width: 34px; height: 34px;
+    border-radius: 999px;
+    border: none;
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    touch-action: manipulation;
+  }
+  .size-toolbar button:hover { background: var(--accent-soft); color: var(--accent); }
+  .size-toolbar button:active { transform: scale(0.9); }
+  .size-toolbar .size-label {
+    font-size: 10.5px; color: var(--text-muted); font-weight: 700;
+    padding: 0 3px; font-variant-numeric: tabular-nums;
+    min-width: 30px; text-align: center;
+  }
+
+  .export-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    box-shadow: var(--shadow-1);
+    flex-wrap: wrap;
+  }
+  .export-info { font-size: 12.5px; color: var(--text-muted); font-weight: 600; }
+
+  .toast {
+    position: fixed;
+    bottom: 18px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: var(--bg);
+    padding: 10px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+    box-shadow: var(--shadow-2);
+    z-index: 50;
+    max-width: 90vw; text-align: center;
+  }
+  .toast.danger { background: var(--danger); color: #fff; }
+  .toast.success { background: var(--success); color: #fff; }
+
+  [hidden] { display: none !important; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&family=Caveat:wght@500;600;700&display=swap">
+
+<div class="app" dir="rtl" lang="ar">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">✍️</span>
+      <div class="brand-text">
+        <h1>قلم التوقيع</h1>
+        <p class="tagline">وقّع ملفات PDF من غير طباعة أو مسح ضوئي</p>
+      </div>
+    </div>
+    <div class="privacy-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <span>كل حاجة بتتم جوّه المتصفح، وملفك متتبعتش لأي سيرفر</span>
+    </div>
+  </header>
+
+  <main id="dropzoneView" class="dropzone-view">
+    <label class="dropzone" for="fileInput" id="dropzone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9.5 15.5l1.8 1.8L15 13.6"/></svg>
+      <p class="dz-title">اسحب ملف PDF هنا أو دوس للاختيار</p>
+      <p class="dz-sub">هيتفتح ويتوقّع من غير ما يسيب جهازك</p>
+      <input id="fileInput" type="file" accept="application/pdf,.pdf" hidden />
+    </label>
+    <p id="loadStatus" class="load-status">بيجهز الأداة…</p>
+  </main>
+
+  <main id="workspaceView" class="workspace" hidden>
+
+    <aside class="panel sig-panel">
+      <div>
+        <p class="panel-title">التوقيع</p>
+        <div class="tabs" role="tablist">
+          <button class="tab-btn active" data-tab="draw">ارسم</button>
+          <button class="tab-btn" data-tab="type">اكتب</button>
+          <button class="tab-btn" data-tab="upload">ارفع صورة</button>
+        </div>
+      </div>
+
+      <div class="tab-panel active" data-tab-panel="draw">
+        <canvas id="drawCanvas" width="520" height="130"></canvas>
+        <div class="ink-row">
+          <span class="ink-label">لون الحبر</span>
+          <button class="swatch active" data-ink="black" style="background:#191B1F"></button>
+          <button class="swatch" data-ink="blue" style="background:#1E3E8C"></button>
+          <button class="ghost-btn" id="clearDraw" style="margin-inline-start:auto">امسح</button>
+        </div>
+        <button class="primary-btn" id="useDraw" disabled>استخدم التوقيع ده</button>
+      </div>
+
+      <div class="tab-panel" data-tab-panel="type">
+        <div class="field-row">
+          <input type="text" class="text-input" id="typeInput" placeholder="اكتب اسمك" maxlength="40" />
+        </div>
+        <div class="font-choice">
+          <button class="font-swatch active" data-font="'Aref Ruqaa', serif" id="fontPreviewAr">توقيع</button>
+          <button class="font-swatch" data-font="'Caveat', cursive" id="fontPreviewLatin">Signature</button>
+        </div>
+        <div class="ink-row">
+          <span class="ink-label">لون الحبر</span>
+          <button class="swatch active" data-ink="black" data-group="type" style="background:#191B1F"></button>
+          <button class="swatch" data-ink="blue" data-group="type" style="background:#1E3E8C"></button>
+        </div>
+        <button class="primary-btn" id="useType" disabled>استخدم التوقيع ده</button>
+      </div>
+
+      <div class="tab-panel" data-tab-panel="upload">
+        <label class="upload-drop" id="uploadDrop">
+          دوس هنا لرفع صورة توقيعك (PNG أو JPG)
+          <input type="file" id="uploadInput" accept="image/png,image/jpeg,image/webp" hidden />
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="removeBg" checked />
+          إزالة الخلفية البيضاء تلقائيًا
+        </label>
+        <button class="primary-btn" id="useUpload" disabled>استخدم الصورة دي</button>
+      </div>
+
+      <div class="lib-section">
+        <p class="panel-title">توقيعاتك المحفوظة</p>
+        <p class="lib-empty" id="libEmpty">لسه معملتش توقيع. ارسم أو اكتب أو ارفع واحد فوق.</p>
+        <div class="lib-grid" id="libGrid"></div>
+      </div>
+
+      <div class="active-hint" id="activeHint">
+        <span id="activeHintText">التوقيع ده جاهز — دوس في أي مكان في الصفحة عشان تحطه</span>
+        <button type="button" class="active-hint-cancel" id="cancelPlaceMode">تمام، إلغاء</button>
+      </div>
+
+      <button class="ghost-btn" id="addDateBtn">+ أضف تاريخ اليوم</button>
+    </aside>
+
+    <section class="stage-area">
+      <div class="stage-toolbar">
+        <button class="icon-btn" id="prevPage" aria-label="السابقة">›</button>
+        <span id="pageIndicator">صفحة 1 من 1</span>
+        <button class="icon-btn" id="nextPage" aria-label="التالية">‹</button>
+        <span class="stage-hint" id="stageHint">اختار توقيع من الشمال، وبعدين دوس على الصفحة</span>
+        <button type="button" class="exit-place-btn" id="exitPlaceModeStage" hidden>✕ خروج من وضع التوقيع</button>
+        <button class="ghost-btn" id="resetBtn">ملف جديد</button>
+      </div>
+
+      <div class="page-stage-wrap">
+        <div class="page-stage" id="pageStage">
+          <canvas id="pdfCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="export-bar">
+        <span class="export-info" id="exportInfo">0 توقيع متحط على الملف</span>
+        <button class="primary-btn" id="downloadBtn" disabled>⬇ نزّل الملف الموقّع</button>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ---------------- state ----------------
+  var state = {
+    pdfBytes: null,          // Uint8Array of ORIGINAL file, kept pristine
+    originalFileName: "ملف.pdf",
+    pdfLibDoc: null,         // pdf-lib document (for page sizes + final export)
+    pdfJsDoc: null,          // pdf.js document (for rendering), may be null if unavailable
+    previewAvailable: true,
+    pageCount: 0,
+    pageSizes: [],           // [{w,h}] in pt, index 0-based
+    currentPage: 0,
+    displayScale: 1,
+    library: [],             // saved signatures [{id,dataUrl,w,h,kind}]
+    activeSigId: null,       // id from library OR "__date__" temp entry
+    tempDateSig: null,       // {dataUrl,w,h} for date stamp
+    placements: [],          // [{id, pageIndex, left, top, w, h, dataUrl, aspect}]
+    selectedPlacementId: null,
+    drawInk: "#191B1F",
+    typeInk: "#191B1F",
+    typeFont: "'Aref Ruqaa', serif",
+    downloadsCap: null,
+    downloadsChecked: false
+  };
+
+  var LIB_KEY = "qalamTawqee.signatures.v1";
+
+  // ---------------- helpers ----------------
+  function $(sel) { return document.querySelector(sel); }
+  function $all(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+  function uid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+
+  function toast(msg, kind) {
+    var el = $("#toast");
+    el.textContent = msg;
+    el.className = "toast" + (kind ? " " + kind : "");
+    el.hidden = false;
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { el.hidden = true; }, 3200);
+  }
+
+  function base64ToUint8Array(dataUrl) {
+    var base64 = dataUrl.split(",")[1];
+    var binary = atob(base64);
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  }
+
+  function loadSavedLibrary() {
+    try {
+      var raw = localStorage.getItem(LIB_KEY);
+      if (raw) state.library = JSON.parse(raw) || [];
+    } catch (e) { state.library = []; }
+  }
+  function persistLibrary() {
+    try { localStorage.setItem(LIB_KEY, JSON.stringify(state.library)); } catch (e) {}
+  }
+
+  // crop a canvas to the bounding box of its non-transparent pixels
+  function cropToContent(canvas, pad) {
+    pad = pad || 4;
+    var ctx = canvas.getContext("2d");
+    var w = canvas.width, h = canvas.height;
+    var data;
+    try { data = ctx.getImageData(0, 0, w, h).data; } catch (e) { return canvas; }
+    var minX = w, minY = h, maxX = -1, maxY = -1;
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var a = data[(y * w + x) * 4 + 3];
+        if (a > 10) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX < 0) return canvas; // nothing drawn
+    minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad);
+    maxX = Math.min(w - 1, maxX + pad); maxY = Math.min(h - 1, maxY + pad);
+    var cw = maxX - minX + 1, ch = maxY - minY + 1;
+    var out = document.createElement("canvas");
+    out.width = cw; out.height = ch;
+    out.getContext("2d").drawImage(canvas, minX, minY, cw, ch, 0, 0, cw, ch);
+    return out;
+  }
+
+  function addSignatureToLibrary(dataUrl, w, h, kind) {
+    var entry = { id: uid(), dataUrl: dataUrl, w: w, h: h, kind: kind || "custom" };
+    state.library.unshift(entry);
+    persistLibrary();
+    renderLibrary();
+    setActiveSignature(entry.id);
+    toast("اتحفظ التوقيع — دلوقتي دوس على الصفحة عشان تحطه", "success");
+  }
+
+  // ---------------- library UI ----------------
+  function renderLibrary() {
+    var grid = $("#libGrid");
+    var empty = $("#libEmpty");
+    grid.innerHTML = "";
+    if (!state.library.length) { empty.hidden = false; return; }
+    empty.hidden = true;
+    state.library.forEach(function (sig) {
+      var card = document.createElement("div");
+      card.className = "lib-card" + (state.activeSigId === sig.id ? " active" : "");
+      card.innerHTML = '<img src="' + sig.dataUrl + '" alt="توقيع محفوظ" />' +
+        '<button class="lib-del" title="امسح" aria-label="امسح">×</button>';
+      card.addEventListener("click", function (e) {
+        if (e.target.closest(".lib-del")) return;
+        setActiveSignature(state.activeSigId === sig.id ? null : sig.id);
+      });
+      card.querySelector(".lib-del").addEventListener("click", function (e) {
+        e.stopPropagation();
+        state.library = state.library.filter(function (s) { return s.id !== sig.id; });
+        persistLibrary();
+        if (state.activeSigId === sig.id) setActiveSignature(null);
+        renderLibrary();
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  function setActiveSignature(id) {
+    state.activeSigId = id;
+    renderLibrary();
+    var hint = $("#activeHint");
+    var stageHint = $("#stageHint");
+    var exitBtn = $("#exitPlaceModeStage");
+    if (id) {
+      hint.classList.add("show");
+      stageHint.textContent = "دوس في أي مكان في الصفحة عشان تحط التوقيع";
+      stageHint.classList.add("armed");
+      exitBtn.hidden = false;
+    } else {
+      hint.classList.remove("show");
+      stageHint.textContent = "اختار توقيع من الشمال، وبعدين دوس على الصفحة";
+      stageHint.classList.remove("armed");
+      exitBtn.hidden = true;
+    }
+  }
+
+  function getActiveSigData() {
+    if (!state.activeSigId) return null;
+    if (state.activeSigId === "__date__") return state.tempDateSig;
+    var sig = state.library.find(function (s) { return s.id === state.activeSigId; });
+    return sig || null;
+  }
+
+  // ---------------- tabs ----------------
+  $all(".tab-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      $all(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+      $all(".tab-panel").forEach(function (p) { p.classList.remove("active"); });
+      btn.classList.add("active");
+      $('.tab-panel[data-tab-panel="' + btn.dataset.tab + '"]').classList.add("active");
+      if (btn.dataset.tab === "draw") resizeDrawCanvas();
+    });
+  });
+
+  // ---------------- draw tab ----------------
+  var drawCanvas = $("#drawCanvas");
+  var drawCtx = drawCanvas.getContext("2d");
+  var drawing = false, hasDrawn = false, lastX = 0, lastY = 0;
+
+  function resizeDrawCanvas() {
+    var rect = drawCanvas.getBoundingClientRect();
+    // the canvas reads as 0-width while its tab/panel is hidden (display:none) —
+    // skip rather than collapsing the backing store and losing what's drawn
+    if (rect.width < 1 || rect.height < 1) return;
+    var dpr = window.devicePixelRatio || 1;
+    drawCanvas.width = Math.round(rect.width * dpr);
+    drawCanvas.height = Math.round(rect.height * dpr);
+    drawCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawCtx.lineWidth = 3;
+    drawCtx.lineCap = "round";
+    drawCtx.lineJoin = "round";
+    drawCtx.strokeStyle = state.drawInk;
+  }
+  window.addEventListener("resize", debounce(resizeDrawCanvas, 200));
+
+  function drawPos(e) {
+    var rect = drawCanvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+  drawCanvas.addEventListener("pointerdown", function (e) {
+    drawing = true; hasDrawn = true;
+    try { drawCanvas.setPointerCapture(e.pointerId); } catch (e) {}
+    var p = drawPos(e); lastX = p.x; lastY = p.y;
+    drawCtx.beginPath(); drawCtx.moveTo(p.x, p.y);
+    $("#useDraw").disabled = false;
+  });
+  drawCanvas.addEventListener("pointermove", function (e) {
+    if (!drawing) return;
+    var p = drawPos(e);
+    drawCtx.lineTo(p.x, p.y); drawCtx.stroke();
+    lastX = p.x; lastY = p.y;
+  });
+  function endDraw() { drawing = false; }
+  drawCanvas.addEventListener("pointerup", endDraw);
+  drawCanvas.addEventListener("pointercancel", endDraw);
+
+  $("#clearDraw").addEventListener("click", function () {
+    drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+    hasDrawn = false;
+    $("#useDraw").disabled = true;
+  });
+
+  $all('.swatch[data-ink]:not([data-group])').forEach(function (sw) {
+    sw.addEventListener("click", function () {
+      $all('.swatch[data-ink]:not([data-group])').forEach(function (s) { s.classList.remove("active"); });
+      sw.classList.add("active");
+      state.drawInk = sw.dataset.ink === "blue" ? "#1E3E8C" : "#191B1F";
+      drawCtx.strokeStyle = state.drawInk;
+    });
+  });
+
+  $("#useDraw").addEventListener("click", function () {
+    if (!hasDrawn) return;
+    var cropped = cropToContent(drawCanvas, 6);
+    var dataUrl = cropped.toDataURL("image/png");
+    addSignatureToLibrary(dataUrl, cropped.width, cropped.height, "draw");
+    drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+    hasDrawn = false;
+    $("#useDraw").disabled = true;
+  });
+
+  // ---------------- type tab ----------------
+  $all('.swatch[data-group="type"]').forEach(function (sw) {
+    sw.addEventListener("click", function () {
+      $all('.swatch[data-group="type"]').forEach(function (s) { s.classList.remove("active"); });
+      sw.classList.add("active");
+      state.typeInk = sw.dataset.ink === "blue" ? "#1E3E8C" : "#191B1F";
+    });
+  });
+  $all(".font-swatch").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      $all(".font-swatch").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      state.typeFont = btn.dataset.font;
+    });
+  });
+  $("#typeInput").addEventListener("input", function () {
+    $("#useType").disabled = !this.value.trim();
+  });
+
+  function rasterizeText(text, fontFamily, color, fontSizePx) {
+    return document.fonts.load(fontSizePx + "px " + fontFamily, text).catch(function () {}).then(function () {
+      return document.fonts.ready;
+    }).then(function () {
+      var tmp = document.createElement("canvas");
+      var tctx = tmp.getContext("2d");
+      tctx.font = fontSizePx + "px " + fontFamily;
+      var metrics = tctx.measureText(text);
+      var padX = fontSizePx * 0.4;
+      var w = Math.ceil(metrics.width + padX * 2);
+      var h = Math.ceil(fontSizePx * 1.6);
+      tmp.width = w; tmp.height = h;
+      tctx.font = fontSizePx + "px " + fontFamily;
+      tctx.fillStyle = color;
+      tctx.textBaseline = "middle";
+      tctx.direction = /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/.test(text) ? "rtl" : "ltr";
+      tctx.textAlign = "center";
+      tctx.fillText(text, w / 2, h / 2);
+      return cropToContent(tmp, 6);
+    });
+  }
+
+  $("#useType").addEventListener("click", function () {
+    var text = $("#typeInput").value.trim();
+    if (!text) return;
+    var btn = this; btn.disabled = true;
+    rasterizeText(text, state.typeFont, state.typeInk, 64).then(function (canvas) {
+      var dataUrl = canvas.toDataURL("image/png");
+      addSignatureToLibrary(dataUrl, canvas.width, canvas.height, "type");
+      $("#typeInput").value = "";
+    }).catch(function () {
+      toast("حصلت مشكلة وإحنا بنجهز الخط، جرب تاني", "danger");
+    }).finally(function () { btn.disabled = false; });
+  });
+
+  // ---------------- upload tab ----------------
+  var pendingUploadDataUrl = null;
+  // NOTE: #uploadInput is nested inside the #uploadDrop <label>, so tapping/
+  // clicking the label already opens the file picker natively — no JS
+  // needed. A redundant `.click()` here used to fire a SECOND programmatic
+  // click in the same gesture, which some mobile browsers (notably iOS
+  // Safari) treat as cancelling the picker that native label behavior just
+  // opened, so the photo picker would flash and close without accepting
+  // anything.
+  $("#uploadInput").addEventListener("change", function () {
+    var file = this.files && this.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      pendingUploadDataUrl = reader.result;
+      $("#useUpload").disabled = false;
+      toast("الصورة جاهزة — دوس \"استخدم الصورة دي\"");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function processUploadedImage(dataUrl, removeBg) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () {
+        var c = document.createElement("canvas");
+        c.width = img.naturalWidth; c.height = img.naturalHeight;
+        var ctx = c.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        if (removeBg) {
+          try {
+            var id = ctx.getImageData(0, 0, c.width, c.height);
+            var d = id.data;
+            var hard = 244, soft = 205;
+            for (var i = 0; i < d.length; i += 4) {
+              var r = d[i], g = d[i + 1], b = d[i + 2];
+              var minC = Math.min(r, g, b);
+              if (minC >= hard) { d[i + 3] = 0; }
+              else if (minC >= soft) {
+                var t = (minC - soft) / (hard - soft);
+                d[i + 3] = Math.round(d[i + 3] * (1 - t));
+              }
+            }
+            ctx.putImageData(id, 0, 0);
+          } catch (e) {}
+        }
+        var out = removeBg ? cropToContent(c, 6) : c;
+        resolve(out);
+      };
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
+  }
+
+  $("#useUpload").addEventListener("click", function () {
+    if (!pendingUploadDataUrl) return;
+    var btn = this; btn.disabled = true;
+    processUploadedImage(pendingUploadDataUrl, $("#removeBg").checked).then(function (canvas) {
+      var dataUrl = canvas.toDataURL("image/png");
+      addSignatureToLibrary(dataUrl, canvas.width, canvas.height, "upload");
+      pendingUploadDataUrl = null;
+    }).catch(function () {
+      toast("متقدرش نقرا الصورة دي", "danger");
+    }).finally(function () { btn.disabled = false; });
+  });
+
+  // ---------------- date stamp ----------------
+  $("#addDateBtn").addEventListener("click", function () {
+    var d = new Date();
+    var text;
+    try {
+      text = d.toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" });
+    } catch (e) {
+      text = d.toISOString().slice(0, 10);
+    }
+    rasterizeText(text, "'IBM Plex Sans Arabic', sans-serif", state.typeInk, 34).then(function (canvas) {
+      state.tempDateSig = { dataUrl: canvas.toDataURL("image/png"), w: canvas.width, h: canvas.height, kind: "date" };
+      setActiveSignature("__date__");
+      toast("جهزنا تاريخ النهاردة — دوس على الصفحة عشان تحطه");
+    });
+  });
+
+  $("#cancelPlaceMode").addEventListener("click", function () { setActiveSignature(null); });
+  $("#exitPlaceModeStage").addEventListener("click", function () { setActiveSignature(null); });
+
+  function debounce(fn, ms) {
+    var t; return function () { clearTimeout(t); var args = arguments, self = this; t = setTimeout(function () { fn.apply(self, args); }, ms); };
+  }
+
+  // ---------------- PDF loading ----------------
+  var libsReady = false;
+  function initLibs() {
+    try {
+      if (window.pdfjsLib) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+      }
+    } catch (e) {}
+    libsReady = !!(window.PDFLib);
+    var status = $("#loadStatus");
+    if (libsReady) {
+      status.textContent = "";
+    } else {
+      status.textContent = "الأداة لسه بتحمّل المكتبات اللازمة… لو الرسالة دي فضلت، تأكد إن الإنترنت شغال وحاول تاني.";
+    }
+  }
+
+  var dropzone = $("#dropzone");
+  var fileInput = $("#fileInput");
+  ["dragover", "dragenter"].forEach(function (ev) {
+    dropzone.addEventListener(ev, function (e) { e.preventDefault(); dropzone.classList.add("drag-over"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    dropzone.addEventListener(ev, function (e) { dropzone.classList.remove("drag-over"); });
+  });
+  dropzone.addEventListener("drop", function (e) {
+    e.preventDefault();
+    var f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  });
+  fileInput.addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (f) handleFile(f);
+  });
+
+  function handleFile(file) {
+    if (!/pdf$/i.test(file.type) && !/\.pdf$/i.test(file.name)) {
+      toast("محتاج ملف PDF بس", "danger");
+      return;
+    }
+    if (!window.PDFLib) {
+      toast("المكتبات لسه بتحمّل، استنى ثانية وحاول تاني", "danger");
+      return;
+    }
+    var status = $("#loadStatus");
+    status.className = "load-status";
+    status.textContent = "بيفتح الملف…";
+
+    state.originalFileName = /\.pdf$/i.test(file.name) ? file.name : (file.name || "ملف") + ".pdf";
+
+    var reader = new FileReader();
+    reader.onload = function () {
+      var bytes = new Uint8Array(reader.result);
+      state.pdfBytes = bytes;
+      loadWithPdfLib(bytes)
+        .then(function () { return loadWithPdfJs(bytes.slice()); })
+        .then(function () {
+          startWorkspace();
+        })
+        .catch(function (err) {
+          console.error(err);
+          status.className = "load-status err";
+          status.textContent = "متقدرش نفتح الملف ده — ممكن يكون محمي بكلمة سر أو تالف.";
+        });
+    };
+    reader.onerror = function () {
+      status.className = "load-status err";
+      status.textContent = "متقدرش نقرا الملف من جهازك.";
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function loadWithPdfLib(bytes) {
+    return PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true }).then(function (doc) {
+      state.pdfLibDoc = doc;
+      var pages = doc.getPages();
+      state.pageCount = pages.length;
+      state.pageSizes = pages.map(function (p) { return { w: p.getWidth(), h: p.getHeight(), rotation: (p.getRotation() && p.getRotation().angle) || 0 }; });
+      if (!state.pageCount) throw new Error("no pages");
+    });
+  }
+
+  function loadWithPdfJs(bytesCopy) {
+    if (!window.pdfjsLib) { state.previewAvailable = false; return Promise.resolve(); }
+    return pdfjsLib.getDocument({ data: bytesCopy }).promise.then(function (doc) {
+      state.pdfJsDoc = doc;
+      state.previewAvailable = true;
+    }).catch(function (err) {
+      console.warn("pdf.js preview unavailable", err);
+      state.previewAvailable = false;
+    });
+  }
+
+  // ---------------- workspace ----------------
+  function startWorkspace() {
+    $("#dropzoneView").hidden = true;
+    $("#workspaceView").hidden = false;
+    // the draw canvas was sized while its panel was still hidden (width would
+    // read as 0 there), so size it for real now that it is visible
+    resizeDrawCanvas();
+    state.currentPage = 0;
+    state.placements = [];
+    state.selectedPlacementId = null;
+    updateExportInfo();
+    renderPage();
+  }
+
+  $("#resetBtn").addEventListener("click", function () {
+    state.pdfBytes = null; state.pdfLibDoc = null; state.pdfJsDoc = null;
+    state.pageCount = 0; state.pageSizes = []; state.placements = [];
+    state.currentPage = 0;
+    $("#workspaceView").hidden = true;
+    $("#dropzoneView").hidden = false;
+    $("#fileInput").value = "";
+    $("#downloadBtn").disabled = true;
+  });
+
+  $("#prevPage").addEventListener("click", function () { changePage(-1); });
+  $("#nextPage").addEventListener("click", function () { changePage(1); });
+  function changePage(delta) {
+    var next = state.currentPage + delta;
+    if (next < 0 || next >= state.pageCount) return;
+    state.currentPage = next;
+    state.selectedPlacementId = null;
+    renderPage();
+  }
+
+  var renderToken = 0;
+  function renderPage() {
+    var myToken = ++renderToken;
+    var idx = state.currentPage;
+    var size = state.pageSizes[idx];
+    $("#pageIndicator").textContent = "صفحة " + (idx + 1) + " من " + state.pageCount;
+    $("#prevPage").disabled = idx === 0;
+    $("#nextPage").disabled = idx === state.pageCount - 1;
+
+    var wrap = $(".page-stage-wrap");
+    var maxCss = Math.min(680, wrap.clientWidth - 40 || 680);
+    var scale = maxCss / size.w;
+    state.displayScale = scale;
+
+    var stage = $("#pageStage");
+    stage.style.width = (size.w * scale) + "px";
+    stage.style.height = (size.h * scale) + "px";
+
+    var fallback = stage.querySelector(".page-outline-fallback");
+    if (fallback) fallback.remove();
+
+    if (state.previewAvailable && state.pdfJsDoc) {
+      state.pdfJsDoc.getPage(idx + 1).then(function (page) {
+        if (myToken !== renderToken) return;
+        var dpr = window.devicePixelRatio || 1;
+        var viewport = page.getViewport({ scale: scale * dpr });
+        var canvas = $("#pdfCanvas");
+        canvas.hidden = false;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        canvas.style.width = (size.w * scale) + "px";
+        canvas.style.height = (size.h * scale) + "px";
+        var ctx = canvas.getContext("2d");
+        page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+          renderPlacements();
+        }).catch(function () {
+          state.previewAvailable = false;
+          renderPage();
+        });
+      }).catch(function () {
+        state.previewAvailable = false;
+        renderPage();
+      });
+    } else {
+      $("#pdfCanvas").hidden = true;
+      var div = document.createElement("div");
+      div.className = "page-outline-fallback";
+      div.style.width = "100%"; div.style.height = "100%"; div.style.position = "absolute"; div.style.inset = "0";
+      div.textContent = "المعاينة مش متاحة دلوقتي، لكن تقدر تحدد مكان التوقيع تقريبيًا وهيتحط صح في الملف النهائي.";
+      stage.appendChild(div);
+      renderPlacements();
+    }
+  }
+  window.addEventListener("resize", debounce(renderPage, 200));
+
+  // ---------------- placements ----------------
+  var stageEl = $("#pageStage");
+
+  stageEl.addEventListener("click", function (e) {
+    if (e.target.closest(".placement")) return;
+    var sig = getActiveSigData();
+    if (!sig) {
+      state.selectedPlacementId = null;
+      renderPlacements();
+      return;
+    }
+    var rect = stageEl.getBoundingClientRect();
+    var clickX = (e.clientX - rect.left) / state.displayScale;
+    var clickY = (e.clientY - rect.top) / state.displayScale;
+    var pageSize = state.pageSizes[state.currentPage];
+    var aspect = sig.w / sig.h;
+    var w = Math.min(pageSize.w * 0.42, 150);
+    var h = w / aspect;
+    var left = clamp(clickX - w / 2, 0, pageSize.w - w);
+    var top = clamp(clickY - h / 2, 0, pageSize.h - h);
+    var placement = {
+      id: uid(), pageIndex: state.currentPage,
+      left: left, top: top, w: w, h: h, baseW: w,
+      dataUrl: sig.dataUrl, aspect: aspect
+    };
+    state.placements.push(placement);
+    state.selectedPlacementId = placement.id;
+    renderPlacements();
+    updateExportInfo();
+  });
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function renderPlacements() {
+    $all(".placement").forEach(function (el) { el.remove(); });
+    var scale = state.displayScale;
+    state.placements
+      .filter(function (p) { return p.pageIndex === state.currentPage; })
+      .forEach(function (p) {
+        var el = document.createElement("div");
+        el.className = "placement" + (p.id === state.selectedPlacementId ? " selected" : "");
+        el.style.left = (p.left * scale) + "px";
+        el.style.top = (p.top * scale) + "px";
+        el.style.width = (p.w * scale) + "px";
+        el.style.height = (p.h * scale) + "px";
+        el.innerHTML = '<img src="' + p.dataUrl + '" alt="توقيع" draggable="false" />' +
+          '<button class="del" aria-label="امسح التوقيع">×</button>' +
+          '<div class="handle" aria-hidden="true"></div>' +
+          '<div class="size-toolbar" role="group" aria-label="حجم التوقيع">' +
+          '<button type="button" class="size-btn" data-dir="down" aria-label="صغّر">－</button>' +
+          '<span class="size-label"></span>' +
+          '<button type="button" class="size-btn" data-dir="up" aria-label="كبّر">＋</button>' +
+          '</div>';
+        el.querySelector(".size-label").textContent = Math.round((p.w / (p.baseW || p.w)) * 100) + "%";
+        bindPlacementEvents(el, p);
+        stageEl.appendChild(el);
+      });
+  }
+
+  // Resize placement `p` (and its live element `el`) by a multiplicative
+  // factor, keeping it centered in place and inside the page bounds.
+  function resizePlacementByFactor(el, p, factor) {
+    var pageSize = state.pageSizes[p.pageIndex];
+    var cx = p.left + p.w / 2, cy = p.top + p.h / 2;
+    var maxW = Math.min(pageSize.w, pageSize.h * p.aspect);
+    var newW = clamp(p.w * factor, 20, maxW);
+    var newH = newW / p.aspect;
+    var newLeft = clamp(cx - newW / 2, 0, Math.max(0, pageSize.w - newW));
+    var newTop = clamp(cy - newH / 2, 0, Math.max(0, pageSize.h - newH));
+    p.w = newW; p.h = newH; p.left = newLeft; p.top = newTop;
+    if (!el) return; // caller will do a full re-render instead (e.g. keyboard shortcut)
+    var scale = state.displayScale;
+    el.style.left = (p.left * scale) + "px";
+    el.style.top = (p.top * scale) + "px";
+    el.style.width = (p.w * scale) + "px";
+    el.style.height = (p.h * scale) + "px";
+    var label = el.querySelector(".size-label");
+    if (label) label.textContent = Math.round((p.w / (p.baseW || p.w)) * 100) + "%";
+  }
+
+  function bindPlacementEvents(el, p) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); selectPlacement(p.id); });
+    el.querySelector(".del").addEventListener("click", function (e) {
+      e.stopPropagation();
+      state.placements = state.placements.filter(function (x) { return x.id !== p.id; });
+      state.selectedPlacementId = null;
+      renderPlacements();
+      updateExportInfo();
+    });
+
+    // Primary, precision-free way to resize: tap the － / + buttons that
+    // appear once a signature is selected. No dragging required.
+    Array.prototype.forEach.call(el.querySelectorAll(".size-btn"), function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        resizePlacementByFactor(el, p, btn.dataset.dir === "up" ? 1.15 : 1 / 1.15);
+      });
+    });
+
+    // Convenience for trackpads/mice: scroll while the signature is selected to resize.
+    el.addEventListener(
+      "wheel",
+      function (e) {
+        if (p.id !== state.selectedPlacementId) return;
+        e.preventDefault();
+        resizePlacementByFactor(el, p, e.deltaY < 0 ? 1.06 : 1 / 1.06);
+      },
+      { passive: false }
+    );
+
+    el.addEventListener("pointerdown", function (e) {
+      if (e.target.closest(".handle") || e.target.closest(".del") || e.target.closest(".size-toolbar")) return;
+      e.stopPropagation();
+      e.preventDefault();
+      selectPlacement(p.id);
+      var startX = e.clientX, startY = e.clientY;
+      var startLeft = p.left, startTop = p.top;
+      var pageSize = state.pageSizes[p.pageIndex];
+      // Listen on `document`, not the (small, easy to outrun) element itself —
+      // pointer capture can silently fail to establish in some hosts, and
+      // without it a fast drag leaves the element's hit area and stalls.
+      function onMove(ev) {
+        var dx = (ev.clientX - startX) / state.displayScale;
+        var dy = (ev.clientY - startY) / state.displayScale;
+        p.left = clamp(startLeft + dx, 0, pageSize.w - p.w);
+        p.top = clamp(startTop + dy, 0, pageSize.h - p.h);
+        el.style.left = (p.left * state.displayScale) + "px";
+        el.style.top = (p.top * state.displayScale) + "px";
+      }
+      function onUp() {
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        document.removeEventListener("pointercancel", onUp);
+      }
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+      document.addEventListener("pointercancel", onUp);
+    });
+
+    var handle = el.querySelector(".handle");
+    handle.addEventListener("pointerdown", function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      selectPlacement(p.id);
+      var startX = e.clientX;
+      var startW = p.w;
+      var pageSize = state.pageSizes[p.pageIndex];
+      function onMove(ev) {
+        var dx = (ev.clientX - startX) / state.displayScale;
+        var newW = clamp(startW + dx, 24, pageSize.w - p.left);
+        var newH = newW / p.aspect;
+        if (p.top + newH > pageSize.h) { newH = pageSize.h - p.top; newW = newH * p.aspect; }
+        p.w = newW; p.h = newH;
+        el.style.width = (p.w * state.displayScale) + "px";
+        el.style.height = (p.h * state.displayScale) + "px";
+      }
+      function onUp() {
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        document.removeEventListener("pointercancel", onUp);
+      }
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+      document.addEventListener("pointercancel", onUp);
+    });
+  }
+
+  function selectPlacement(id) {
+    state.selectedPlacementId = id;
+    $all(".placement").forEach(function (el, i) {});
+    renderPlacements();
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      var tag0 = (document.activeElement && document.activeElement.tagName) || "";
+      if (tag0 === "INPUT" || tag0 === "TEXTAREA") return;
+      if (state.activeSigId) { setActiveSignature(null); return; }
+      if (state.selectedPlacementId) { state.selectedPlacementId = null; renderPlacements(); return; }
+      return;
+    }
+    if (!state.selectedPlacementId) return;
+    var tag = (document.activeElement && document.activeElement.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+    if (e.key === "Delete" || e.key === "Backspace") {
+      state.placements = state.placements.filter(function (p) { return p.id !== state.selectedPlacementId; });
+      state.selectedPlacementId = null;
+      renderPlacements();
+      updateExportInfo();
+      return;
+    }
+    if (e.key === "+" || e.key === "=" || e.key === "-" || e.key === "_") {
+      var p = state.placements.find(function (pl) { return pl.id === state.selectedPlacementId; });
+      if (!p) return;
+      e.preventDefault();
+      var isGrow = e.key === "+" || e.key === "=";
+      resizePlacementByFactor(null, p, isGrow ? 1.1 : 1 / 1.1);
+      renderPlacements();
+      return;
+    }
+
+    var ARROW_DELTAS = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+    if (ARROW_DELTAS[e.key]) {
+      var pa = state.placements.find(function (pl) { return pl.id === state.selectedPlacementId; });
+      if (!pa) return;
+      e.preventDefault();
+      var pageSizeA = state.pageSizes[pa.pageIndex];
+      var step = e.shiftKey ? 12 : 2; // pt — Shift for a bigger nudge
+      var d = ARROW_DELTAS[e.key];
+      pa.left = clamp(pa.left + d[0] * step, 0, Math.max(0, pageSizeA.w - pa.w));
+      pa.top = clamp(pa.top + d[1] * step, 0, Math.max(0, pageSizeA.h - pa.h));
+      renderPlacements();
+    }
+  });
+
+  function updateExportInfo() {
+    var n = state.placements.length;
+    $("#exportInfo").textContent = n === 0 ? "0 توقيع متحط على الملف" : (n + " توقيع متحط على الملف");
+    $("#downloadBtn").disabled = n === 0;
+  }
+
+  // ---------------- export ----------------
+  function ensureDownloadsCapability() {
+    if (state.downloadsChecked) return Promise.resolve(state.downloadsCap);
+    state.downloadsChecked = true;
+    if (!window.claude || !window.claude.use) { state.downloadsCap = null; return Promise.resolve(null); }
+    return window.claude.use("downloads").then(function (cap) {
+      state.downloadsCap = cap;
+      return cap;
+    }).catch(function () { state.downloadsCap = null; return null; });
+  }
+  ensureDownloadsCapability();
+
+  // Plain-browser download, used whenever this page is running outside the
+  // Claude platform (self-hosted, opened as a local file, etc.) where
+  // window.claude / the "downloads" capability simply doesn't exist.
+  function fallbackBrowserDownload(filename, bytes) {
+    try {
+      var blob = new Blob([bytes], { type: "application/pdf" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  $("#downloadBtn").addEventListener("click", function () {
+    if (!state.placements.length || !state.pdfBytes) return;
+    var btn = this;
+    btn.disabled = true;
+    var originalLabel = btn.textContent;
+    btn.textContent = "بيحضّر الملف…";
+
+    buildSignedPdf().then(function (bytes) {
+      return ensureDownloadsCapability().then(function (cap) {
+        if (cap) return cap.save({ filename: state.originalFileName, data: bytes });
+        // Not running inside Claude (e.g. this page was self-hosted) — fall
+        // back to a normal browser download instead of failing.
+        if (fallbackBrowserDownload(state.originalFileName, bytes)) return { status: "saved" };
+        throw { code: "unavailable", message: "no download mechanism available" };
+      });
+    }).then(function () {
+      toast("اتنزّل الملف بنجاح ✍️", "success");
+    }).catch(function (err) {
+      var code = err && err.code;
+      if (code === "declined") {
+        // user cancelled, no message needed
+      } else if (code === "too_large") {
+        toast("الملف كبير أوي (أكتر من 16 ميجا)", "danger");
+      } else if (code === "rate_limited") {
+        toast("استنى ثانية وحاول تاني", "danger");
+      } else {
+        console.error(err);
+        toast("متقدرش ننزّل الملف دلوقتي، جرب تاني", "danger");
+      }
+    }).finally(function () {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    });
+  });
+
+  function buildSignedPdf() {
+    return PDFLib.PDFDocument.load(state.pdfBytes, { ignoreEncryption: true }).then(function (doc) {
+      var pages = doc.getPages();
+      var embedCache = {};
+
+      function embed(dataUrl) {
+        if (embedCache[dataUrl]) return embedCache[dataUrl];
+        var bytes = base64ToUint8Array(dataUrl);
+        var p = doc.embedPng(bytes);
+        embedCache[dataUrl] = p;
+        return p;
+      }
+
+      var jobs = state.placements.map(function (pl) {
+        return embed(pl.dataUrl).then(function (img) {
+          var page = pages[pl.pageIndex];
+          var pageSize = state.pageSizes[pl.pageIndex];
+          var rotation = pageSize.rotation % 360;
+          if (rotation === 0) {
+            page.drawImage(img, {
+              x: pl.left,
+              y: pageSize.h - pl.top - pl.h,
+              width: pl.w,
+              height: pl.h
+            });
+          } else {
+            // Best-effort placement for rotated pages (rare for personal documents).
+            page.drawImage(img, {
+              x: clamp(pl.left, 0, Math.max(0, page.getWidth() - pl.w)),
+              y: Math.max(0, page.getHeight() - pl.top - pl.h),
+              width: pl.w,
+              height: pl.h
+            });
+          }
+        });
+      });
+
+      return Promise.all(jobs).then(function () { return doc.save(); });
+    });
+  }
+
+  // ---------------- init ----------------
+  loadSavedLibrary();
+  renderLibrary();
+  resizeDrawCanvas();
+  initLibs();
+  setTimeout(initLibs, 900); // libs load async; re-check shortly after
+})();
+</script>
