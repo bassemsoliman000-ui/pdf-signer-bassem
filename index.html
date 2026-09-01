@@ -1,4 +1,11 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>قلم التوقيع</title>
+</head>
+<body>
 <style>
   :root {
     --bg: #EEF0F5;
@@ -240,6 +247,35 @@
     font-family: var(--font-body);
   }
   input[type="text"].text-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .signature-preview {
+    min-height: 78px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    overflow: hidden;
+  }
+  .signature-preview-text {
+    font-size: 36px;
+    line-height: 1.15;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .signature-preview.placeholder {
+    background: var(--surface-2);
+  }
+  .signature-preview.placeholder .signature-preview-text {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
 
   .font-choice { display: flex; gap: 8px; }
   .font-swatch {
@@ -572,9 +608,12 @@
         <div class="field-row">
           <input type="text" class="text-input" id="typeInput" placeholder="اكتب اسمك" maxlength="40" />
         </div>
+        <div class="signature-preview placeholder" id="typePreviewBox">
+          <span class="signature-preview-text" id="typePreviewText">توقيعك هيظهر هنا وانت بتكتب</span>
+        </div>
         <div class="font-choice">
-          <button class="font-swatch active" data-font="'Aref Ruqaa', serif" id="fontPreviewAr">توقيع</button>
-          <button class="font-swatch" data-font="'Caveat', cursive" id="fontPreviewLatin">Signature</button>
+          <button class="font-swatch active" data-font="'Aref Ruqaa', serif" data-weight="700" id="fontPreviewAr">خط عربي</button>
+          <button class="font-swatch" data-font="'Caveat', cursive" data-weight="600" id="fontPreviewLatin">Latin</button>
         </div>
         <div class="ink-row">
           <span class="ink-label">لون الحبر</span>
@@ -662,6 +701,7 @@
     drawInk: "#191B1F",
     typeInk: "#191B1F",
     typeFont: "'Aref Ruqaa', serif",
+    typeWeight: "700",
     downloadsCap: null,
     downloadsChecked: false
   };
@@ -870,11 +910,36 @@
   });
 
   // ---------------- type tab ----------------
+  var RTL_SCRIPT_RE = /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
+  function isRtlText(text) { return RTL_SCRIPT_RE.test(text); }
+
+  function updateTypePreview() {
+    var text = $("#typeInput").value;
+    var box = $("#typePreviewBox");
+    var span = $("#typePreviewText");
+    if (!text.trim()) {
+      box.classList.add("placeholder");
+      span.textContent = "\u062A\u0648\u0642\u064A\u0639\u0643 \u0647\u064A\u0638\u0647\u0631 \u0647\u0646\u0627 \u0648\u0627\u0646\u062A \u0628\u062A\u0643\u062A\u0628";
+      span.removeAttribute("dir");
+      span.style.fontFamily = "";
+      span.style.fontWeight = "";
+      span.style.color = "";
+      return;
+    }
+    box.classList.remove("placeholder");
+    span.textContent = text;
+    span.dir = isRtlText(text) ? "rtl" : "ltr";
+    span.style.fontFamily = state.typeFont;
+    span.style.fontWeight = state.typeWeight;
+    span.style.color = state.typeInk;
+  }
+
   $all('.swatch[data-group="type"]').forEach(function (sw) {
     sw.addEventListener("click", function () {
       $all('.swatch[data-group="type"]').forEach(function (s) { s.classList.remove("active"); });
       sw.classList.add("active");
       state.typeInk = sw.dataset.ink === "blue" ? "#1E3E8C" : "#191B1F";
+      updateTypePreview();
     });
   });
   $all(".font-swatch").forEach(function (btn) {
@@ -882,28 +947,33 @@
       $all(".font-swatch").forEach(function (b) { b.classList.remove("active"); });
       btn.classList.add("active");
       state.typeFont = btn.dataset.font;
+      state.typeWeight = btn.dataset.weight || "400";
+      updateTypePreview();
     });
   });
   $("#typeInput").addEventListener("input", function () {
     $("#useType").disabled = !this.value.trim();
+    updateTypePreview();
   });
 
-  function rasterizeText(text, fontFamily, color, fontSizePx) {
-    return document.fonts.load(fontSizePx + "px " + fontFamily, text).catch(function () {}).then(function () {
+  function rasterizeText(text, fontFamily, color, fontSizePx, weight) {
+    weight = weight || "400";
+    var fontSpec = weight + " " + fontSizePx + "px " + fontFamily;
+    return document.fonts.load(fontSpec, text).catch(function () {}).then(function () {
       return document.fonts.ready;
     }).then(function () {
       var tmp = document.createElement("canvas");
       var tctx = tmp.getContext("2d");
-      tctx.font = fontSizePx + "px " + fontFamily;
+      tctx.font = fontSpec;
       var metrics = tctx.measureText(text);
       var padX = fontSizePx * 0.4;
       var w = Math.ceil(metrics.width + padX * 2);
       var h = Math.ceil(fontSizePx * 1.6);
       tmp.width = w; tmp.height = h;
-      tctx.font = fontSizePx + "px " + fontFamily;
+      tctx.font = fontSpec;
       tctx.fillStyle = color;
       tctx.textBaseline = "middle";
-      tctx.direction = /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/.test(text) ? "rtl" : "ltr";
+      tctx.direction = isRtlText(text) ? "rtl" : "ltr";
       tctx.textAlign = "center";
       tctx.fillText(text, w / 2, h / 2);
       return cropToContent(tmp, 6);
@@ -914,10 +984,11 @@
     var text = $("#typeInput").value.trim();
     if (!text) return;
     var btn = this; btn.disabled = true;
-    rasterizeText(text, state.typeFont, state.typeInk, 64).then(function (canvas) {
+    rasterizeText(text, state.typeFont, state.typeInk, 64, state.typeWeight).then(function (canvas) {
       var dataUrl = canvas.toDataURL("image/png");
       addSignatureToLibrary(dataUrl, canvas.width, canvas.height, "type");
       $("#typeInput").value = "";
+      updateTypePreview();
     }).catch(function () {
       toast("حصلت مشكلة وإحنا بنجهز الخط، جرب تاني", "danger");
     }).finally(function () { btn.disabled = false; });
@@ -1532,3 +1603,5 @@
   setTimeout(initLibs, 900); // libs load async; re-check shortly after
 })();
 </script>
+</body>
+</html>
