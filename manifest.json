@@ -1,0 +1,19 @@
+{
+  "name": "قلم التوقيع",
+  "short_name": "قلم التوقيع",
+  "description": "وقّع ملفات PDF من غير طباعة أو مسح ضوئي — كله جوه المتصفح، وملفك متبعتش لأي سيرفر",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#EEF0F5",
+  "theme_color": "#2A4B94",
+  "orientation": "any",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
