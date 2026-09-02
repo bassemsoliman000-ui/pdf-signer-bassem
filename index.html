@@ -277,9 +277,8 @@
     font-weight: 400;
   }
 
-  .font-choice { display: flex; gap: 8px; }
+  .font-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .font-swatch {
-    flex: 1;
     border: 1px solid var(--border);
     background: var(--surface);
     border-radius: var(--radius-sm);
@@ -340,16 +339,43 @@
     position: relative;
     border: 1.5px solid var(--border);
     border-radius: var(--radius-sm);
+    background: var(--surface);
+    padding: 6px;
+    cursor: pointer;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .lib-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+  .lib-card-img {
+    height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 5px;
     background:
       conic-gradient(var(--surface-2) 90deg, transparent 90deg 180deg, var(--surface-2) 180deg 270deg, transparent 270deg) top left / 12px 12px,
       var(--surface);
-    padding: 6px;
-    cursor: pointer;
-    height: 56px;
-    display: flex; align-items: center; justify-content: center;
   }
-  .lib-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
   .lib-card img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .lib-card-name {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 2px 3px;
+    border-radius: 4px;
+  }
+  .lib-card-name:hover { background: var(--surface-2); color: var(--text); }
+  .lib-card-name-input {
+    font: inherit;
+    font-size: 11px;
+    text-align: center;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 1px 3px;
+    width: 100%;
+    background: var(--surface);
+    color: var(--text);
+  }
   .lib-del {
     position: absolute; top: -6px; inset-inline-end: -6px;
     width: 18px; height: 18px; border-radius: 999px;
@@ -553,7 +579,7 @@
 </style>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&family=Aref+Ruqaa+Ink&family=Caveat:wght@500;600;700&family=Dancing+Script:wght@600;700&display=swap">
 
 <div class="app" dir="rtl" lang="ar">
 
@@ -612,8 +638,10 @@
           <span class="signature-preview-text" id="typePreviewText">توقيعك هيظهر هنا وانت بتكتب</span>
         </div>
         <div class="font-choice">
-          <button class="font-swatch active" data-font="'Aref Ruqaa', serif" data-weight="700" id="fontPreviewAr">خط عربي</button>
-          <button class="font-swatch" data-font="'Caveat', cursive" data-weight="600" id="fontPreviewLatin">Latin</button>
+          <button class="font-swatch active" data-font="'Aref Ruqaa', serif" data-weight="700" id="fontPreviewAr" style="font-family:'Aref Ruqaa', serif; font-weight:700;">أ ب ج</button>
+          <button class="font-swatch" data-font="'Aref Ruqaa Ink', serif" data-weight="400" id="fontPreviewAr2" style="font-family:'Aref Ruqaa Ink', serif; font-weight:400;">أ ب ج</button>
+          <button class="font-swatch" data-font="'Caveat', cursive" data-weight="600" id="fontPreviewLatin" style="font-family:'Caveat', cursive; font-weight:600;">Aa Bb</button>
+          <button class="font-swatch" data-font="'Dancing Script', cursive" data-weight="700" id="fontPreviewLatin2" style="font-family:'Dancing Script', cursive; font-weight:700;">Aa Bb</button>
         </div>
         <div class="ink-row">
           <span class="ink-label">لون الحبر</span>
@@ -654,6 +682,10 @@
         <button class="icon-btn" id="prevPage" aria-label="السابقة">›</button>
         <span id="pageIndicator">صفحة 1 من 1</span>
         <button class="icon-btn" id="nextPage" aria-label="التالية">‹</button>
+        <label class="checkbox-row" id="allPagesRow" hidden title="لو اخترته، لما تدوس على الصفحة هيتحط نفس التوقيع في نفس المكان في كل صفحات الملف">
+          <input type="checkbox" id="applyAllPages" />
+          طبّق على كل الصفحات
+        </label>
         <span class="stage-hint" id="stageHint">اختار توقيع من الشمال، وبعدين دوس على الصفحة</span>
         <button type="button" class="exit-place-btn" id="exitPlaceModeStage" hidden>✕ خروج من وضع التوقيع</button>
         <button class="ghost-btn" id="resetBtn">ملف جديد</button>
@@ -667,6 +699,7 @@
 
       <div class="export-bar">
         <span class="export-info" id="exportInfo">0 توقيع متحط على الملف</span>
+        <button class="ghost-btn" id="downloadPngBtn" disabled>🖼 نزّل الصفحة دي كصورة</button>
         <button class="primary-btn" id="downloadBtn" disabled>⬇ نزّل الملف الموقّع</button>
       </div>
     </section>
@@ -769,8 +802,18 @@
     return out;
   }
 
-  function addSignatureToLibrary(dataUrl, w, h, kind) {
-    var entry = { id: uid(), dataUrl: dataUrl, w: w, h: h, kind: kind || "custom" };
+  function defaultLibName(kind, hintText) {
+    if (kind === "type" && hintText) return hintText.slice(0, 30);
+    var base = kind === "upload" ? "توقيع مرفوع" : (kind === "date" ? "تاريخ" : "توقيع مرسوم");
+    var count = state.library.filter(function (s) { return s.kind === kind; }).length;
+    return count === 0 ? base : base + " (" + (count + 1) + ")";
+  }
+
+  function addSignatureToLibrary(dataUrl, w, h, kind, name) {
+    var entry = {
+      id: uid(), dataUrl: dataUrl, w: w, h: h, kind: kind || "custom",
+      name: (name && name.trim()) ? name.trim().slice(0, 30) : defaultLibName(kind)
+    };
     state.library.unshift(entry);
     persistLibrary();
     renderLibrary();
@@ -788,13 +831,40 @@
     state.library.forEach(function (sig) {
       var card = document.createElement("div");
       card.className = "lib-card" + (state.activeSigId === sig.id ? " active" : "");
-      card.innerHTML = '<img src="' + sig.dataUrl + '" alt="توقيع محفوظ" />' +
-        '<button class="lib-del" title="امسح" aria-label="امسح">×</button>';
+
+      var imgBox = document.createElement("div");
+      imgBox.className = "lib-card-img";
+      var img = document.createElement("img");
+      img.src = sig.dataUrl;
+      img.alt = "توقيع محفوظ";
+      img.draggable = false;
+      imgBox.appendChild(img);
+
+      var nameEl = document.createElement("div");
+      nameEl.className = "lib-card-name";
+      nameEl.title = "دوس عشان تغيّر الاسم";
+      nameEl.textContent = sig.name || defaultLibName(sig.kind);
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "lib-del";
+      delBtn.title = "امسح";
+      delBtn.setAttribute("aria-label", "امسح");
+      delBtn.textContent = "×";
+
+      card.appendChild(imgBox);
+      card.appendChild(nameEl);
+      card.appendChild(delBtn);
+
       card.addEventListener("click", function (e) {
-        if (e.target.closest(".lib-del")) return;
+        if (e.target.closest(".lib-del") || e.target.closest(".lib-card-name")) return;
         setActiveSignature(state.activeSigId === sig.id ? null : sig.id);
       });
-      card.querySelector(".lib-del").addEventListener("click", function (e) {
+      nameEl.addEventListener("click", function (e) {
+        e.stopPropagation();
+        startRenameSignature(card, sig);
+      });
+      delBtn.addEventListener("click", function (e) {
         e.stopPropagation();
         state.library = state.library.filter(function (s) { return s.id !== sig.id; });
         persistLibrary();
@@ -802,6 +872,38 @@
         renderLibrary();
       });
       grid.appendChild(card);
+    });
+  }
+
+  function startRenameSignature(card, sig) {
+    var nameEl = card.querySelector(".lib-card-name");
+    if (!nameEl) return;
+    var input = document.createElement("input");
+    input.type = "text";
+    input.className = "lib-card-name-input";
+    input.maxLength = 30;
+    input.value = sig.name || defaultLibName(sig.kind);
+    nameEl.replaceWith(input);
+    input.focus();
+    input.select();
+    var settled = false;
+    function commit() {
+      if (settled) return; settled = true;
+      var v = input.value.trim();
+      sig.name = v ? v.slice(0, 30) : (sig.name || defaultLibName(sig.kind));
+      persistLibrary();
+      renderLibrary();
+    }
+    function cancel() {
+      if (settled) return; settled = true;
+      renderLibrary();
+    }
+    input.addEventListener("blur", commit);
+    input.addEventListener("click", function (e) { e.stopPropagation(); });
+    input.addEventListener("keydown", function (e) {
+      e.stopPropagation();
+      if (e.key === "Enter") { e.preventDefault(); input.blur(); }
+      else if (e.key === "Escape") { e.preventDefault(); cancel(); }
     });
   }
 
@@ -913,6 +1015,20 @@
   var RTL_SCRIPT_RE = /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
   function isRtlText(text) { return RTL_SCRIPT_RE.test(text); }
 
+  // Small deterministic pseudo-random helpers used to give typed signatures a
+  // bit of organic, hand-drawn variation (a fixed seed per character/text so
+  // the wobble stays put while typing instead of flickering on every
+  // keystroke).
+  function pseudoRandom(seed) {
+    var x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  }
+  function hashSeed(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) | 0; }
+    return h;
+  }
+
   function updateTypePreview() {
     var text = $("#typeInput").value;
     var box = $("#typePreviewBox");
@@ -924,14 +1040,47 @@
       span.style.fontFamily = "";
       span.style.fontWeight = "";
       span.style.color = "";
+      span.style.transform = "";
+      span.style.display = "";
       return;
     }
     box.classList.remove("placeholder");
-    span.textContent = text;
     span.dir = isRtlText(text) ? "rtl" : "ltr";
     span.style.fontFamily = state.typeFont;
     span.style.fontWeight = state.typeWeight;
     span.style.color = state.typeInk;
+    renderOrganicPreview(span, text);
+  }
+
+  // Renders `text` into `span` with a subtle hand-drawn wobble: a small
+  // per-character rotate/lift/scale for Latin script (safe, since each glyph
+  // renders independently), or a single gentle whole-word tilt for Arabic
+  // script (per-character splitting would break the contextual shaping that
+  // connects Arabic letters, so the whole run is kept as one text node).
+  function renderOrganicPreview(span, text) {
+    span.innerHTML = "";
+    if (isRtlText(text)) {
+      span.textContent = text;
+      var seed = hashSeed(text);
+      var tiltDeg = (pseudoRandom(seed) - 0.5) * 3;
+      span.style.display = "inline-block";
+      span.style.transform = "rotate(" + tiltDeg.toFixed(2) + "deg)";
+      return;
+    }
+    span.style.transform = "";
+    span.style.display = "";
+    Array.from(text).forEach(function (ch, idx) {
+      var seed = idx * 137 + ch.charCodeAt(0) * 31;
+      var r1 = pseudoRandom(seed), r2 = pseudoRandom(seed * 1.7 + 1), r3 = pseudoRandom(seed * 2.3 + 2);
+      var rotate = (r1 - 0.5) * 9;
+      var dy = (r2 - 0.5) * 0.14;
+      var scale = 0.94 + r3 * 0.12;
+      var charSpan = document.createElement("span");
+      charSpan.textContent = ch === " " ? "\u00A0" : ch;
+      charSpan.style.display = "inline-block";
+      charSpan.style.transform = "translateY(" + dy.toFixed(3) + "em) rotate(" + rotate.toFixed(2) + "deg) scale(" + scale.toFixed(3) + ")";
+      span.appendChild(charSpan);
+    });
   }
 
   $all('.swatch[data-group="type"]').forEach(function (sw) {
@@ -956,27 +1105,77 @@
     updateTypePreview();
   });
 
-  function rasterizeText(text, fontFamily, color, fontSizePx, weight) {
+  function rasterizeText(text, fontFamily, color, fontSizePx, weight, organic) {
     weight = weight || "400";
     var fontSpec = weight + " " + fontSizePx + "px " + fontFamily;
     return document.fonts.load(fontSpec, text).catch(function () {}).then(function () {
       return document.fonts.ready;
     }).then(function () {
+      var rtl = isRtlText(text);
       var tmp = document.createElement("canvas");
       var tctx = tmp.getContext("2d");
       tctx.font = fontSpec;
-      var metrics = tctx.measureText(text);
-      var padX = fontSizePx * 0.4;
-      var w = Math.ceil(metrics.width + padX * 2);
-      var h = Math.ceil(fontSizePx * 1.6);
-      tmp.width = w; tmp.height = h;
+
+      if (!organic || rtl) {
+        // Plain single fillText call — keeps full text shaping intact, which
+        // matters for Arabic (its letters connect differently depending on
+        // neighbours, so drawing them one at a time would break the joins).
+        var metrics = tctx.measureText(text);
+        var padX = fontSizePx * 0.4;
+        var w = Math.ceil(metrics.width + padX * 2);
+        var h = Math.ceil(fontSizePx * 1.6);
+        tmp.width = w; tmp.height = h;
+        tctx.font = fontSpec;
+        tctx.fillStyle = color;
+        tctx.textBaseline = "middle";
+        tctx.direction = rtl ? "rtl" : "ltr";
+        tctx.textAlign = "center";
+        if (organic) {
+          // whole-word tilt only — safe for Arabic since it doesn't touch
+          // individual letters
+          var tiltDeg = (pseudoRandom(hashSeed(text)) - 0.5) * 3;
+          tctx.translate(w / 2, h / 2);
+          tctx.rotate(tiltDeg * Math.PI / 180);
+          tctx.fillText(text, 0, 0);
+          tctx.setTransform(1, 0, 0, 1, 0, 0);
+        } else {
+          tctx.fillText(text, w / 2, h / 2);
+        }
+        return cropToContent(tmp, 6);
+      }
+
+      // Organic per-character wobble (Latin/non-cursive scripts only): each
+      // glyph gets a small deterministic random rotate/lift/scale so the
+      // result reads a little more like natural handwriting.
+      var chars = Array.from(text);
+      var widths = chars.map(function (ch) { return tctx.measureText(ch).width; });
+      var totalW = widths.reduce(function (a, b) { return a + b; }, 0);
+      var padX2 = fontSizePx * 0.5;
+      var w2 = Math.ceil(totalW + padX2 * 2);
+      var h2 = Math.ceil(fontSizePx * 2);
+      tmp.width = w2; tmp.height = h2;
       tctx.font = fontSpec;
       tctx.fillStyle = color;
-      tctx.textBaseline = "middle";
-      tctx.direction = isRtlText(text) ? "rtl" : "ltr";
-      tctx.textAlign = "center";
-      tctx.fillText(text, w / 2, h / 2);
-      return cropToContent(tmp, 6);
+      tctx.textBaseline = "alphabetic";
+      tctx.textAlign = "left";
+      tctx.direction = "ltr";
+      var cursorX = padX2;
+      var baseY = h2 / 2 + fontSizePx * 0.32;
+      chars.forEach(function (ch, idx) {
+        var seed = idx * 137 + ch.charCodeAt(0) * 31;
+        var r1 = pseudoRandom(seed), r2 = pseudoRandom(seed * 1.7 + 1), r3 = pseudoRandom(seed * 2.3 + 2);
+        var rotate = (r1 - 0.5) * 0.16;
+        var dy = (r2 - 0.5) * fontSizePx * 0.14;
+        var scale = 0.94 + r3 * 0.12;
+        tctx.save();
+        tctx.translate(cursorX, baseY + dy);
+        tctx.rotate(rotate);
+        tctx.scale(scale, scale);
+        tctx.fillText(ch, 0, 0);
+        tctx.restore();
+        cursorX += widths[idx];
+      });
+      return cropToContent(tmp, 8);
     });
   }
 
@@ -984,9 +1183,9 @@
     var text = $("#typeInput").value.trim();
     if (!text) return;
     var btn = this; btn.disabled = true;
-    rasterizeText(text, state.typeFont, state.typeInk, 64, state.typeWeight).then(function (canvas) {
+    rasterizeText(text, state.typeFont, state.typeInk, 64, state.typeWeight, true).then(function (canvas) {
       var dataUrl = canvas.toDataURL("image/png");
-      addSignatureToLibrary(dataUrl, canvas.width, canvas.height, "type");
+      addSignatureToLibrary(dataUrl, canvas.width, canvas.height, "type", text);
       $("#typeInput").value = "";
       updateTypePreview();
     }).catch(function () {
@@ -1015,6 +1214,42 @@
     reader.readAsDataURL(file);
   });
 
+  // Smooths the alpha channel in place with a small separable box blur, so the
+  // cutout edge fades gradually instead of stair-stepping pixel by pixel —
+  // this is what actually removes the "jagged" look, since the per-pixel
+  // luminance threshold alone decides each pixel independently of its
+  // neighbours.
+  function featherAlphaChannel(data, width, height, radius) {
+    var n = width * height;
+    var alpha = new Float32Array(n);
+    for (var i = 0; i < n; i++) alpha[i] = data[i * 4 + 3];
+    var tmp = new Float32Array(n);
+    for (var y = 0; y < height; y++) {
+      var rowOff = y * width;
+      for (var x = 0; x < width; x++) {
+        var sum = 0, cnt = 0;
+        for (var dx = -radius; dx <= radius; dx++) {
+          var nx = x + dx;
+          if (nx < 0 || nx >= width) continue;
+          sum += alpha[rowOff + nx]; cnt++;
+        }
+        tmp[rowOff + x] = sum / cnt;
+      }
+    }
+    for (var x2 = 0; x2 < width; x2++) {
+      for (var y2 = 0; y2 < height; y2++) {
+        var sum2 = 0, cnt2 = 0;
+        for (var dy = -radius; dy <= radius; dy++) {
+          var ny = y2 + dy;
+          if (ny < 0 || ny >= height) continue;
+          sum2 += tmp[ny * width + x2]; cnt2++;
+        }
+        alpha[y2 * width + x2] = sum2 / cnt2;
+      }
+    }
+    for (var i2 = 0; i2 < n; i2++) data[i2 * 4 + 3] = Math.round(alpha[i2]);
+  }
+
   function processUploadedImage(dataUrl, removeBg) {
     return new Promise(function (resolve, reject) {
       var img = new Image();
@@ -1027,7 +1262,9 @@
           try {
             var id = ctx.getImageData(0, 0, c.width, c.height);
             var d = id.data;
-            var hard = 244, soft = 205;
+            // wider soft band than before -> a smoother alpha gradient near
+            // the ink, on top of the spatial feathering pass below
+            var hard = 248, soft = 190;
             for (var i = 0; i < d.length; i += 4) {
               var r = d[i], g = d[i + 1], b = d[i + 2];
               var minC = Math.min(r, g, b);
@@ -1037,6 +1274,7 @@
                 d[i + 3] = Math.round(d[i + 3] * (1 - t));
               }
             }
+            featherAlphaChannel(d, c.width, c.height, 1);
             ctx.putImageData(id, 0, 0);
           } catch (e) {}
         }
@@ -1187,6 +1425,8 @@
     state.placements = [];
     state.selectedPlacementId = null;
     updateExportInfo();
+    $("#allPagesRow").hidden = state.pageCount <= 1;
+    $("#applyAllPages").checked = false;
     renderPage();
   }
 
@@ -1218,6 +1458,7 @@
     $("#pageIndicator").textContent = "صفحة " + (idx + 1) + " من " + state.pageCount;
     $("#prevPage").disabled = idx === 0;
     $("#nextPage").disabled = idx === state.pageCount - 1;
+    $("#downloadPngBtn").disabled = !state.previewAvailable;
 
     var wrap = $(".page-stage-wrap");
     var maxCss = Math.min(680, wrap.clientWidth - 40 || 680);
@@ -1285,13 +1526,34 @@
     var h = w / aspect;
     var left = clamp(clickX - w / 2, 0, pageSize.w - w);
     var top = clamp(clickY - h / 2, 0, pageSize.h - h);
-    var placement = {
-      id: uid(), pageIndex: state.currentPage,
-      left: left, top: top, w: w, h: h, baseW: w,
-      dataUrl: sig.dataUrl, aspect: aspect
-    };
-    state.placements.push(placement);
-    state.selectedPlacementId = placement.id;
+
+    var applyAll = $("#applyAllPages") && $("#applyAllPages").checked && state.pageCount > 1;
+    var lastPlacement = null;
+    if (applyAll) {
+      for (var pi = 0; pi < state.pageCount; pi++) {
+        var ps = state.pageSizes[pi];
+        // re-clamp per page in case page sizes differ
+        var pw = Math.min(w, ps.w), ph = pw / aspect;
+        var pleft = clamp(left, 0, Math.max(0, ps.w - pw));
+        var ptop = clamp(top, 0, Math.max(0, ps.h - ph));
+        var pl = {
+          id: uid(), pageIndex: pi,
+          left: pleft, top: ptop, w: pw, h: ph, baseW: pw,
+          dataUrl: sig.dataUrl, aspect: aspect
+        };
+        state.placements.push(pl);
+        if (pi === state.currentPage) lastPlacement = pl;
+      }
+      toast("اتحط التوقيع في كل صفحات الملف (" + state.pageCount + ")", "success");
+    } else {
+      lastPlacement = {
+        id: uid(), pageIndex: state.currentPage,
+        left: left, top: top, w: w, h: h, baseW: w,
+        dataUrl: sig.dataUrl, aspect: aspect
+      };
+      state.placements.push(lastPlacement);
+    }
+    state.selectedPlacementId = lastPlacement ? lastPlacement.id : null;
     renderPlacements();
     updateExportInfo();
   });
@@ -1502,9 +1764,9 @@
   // Plain-browser download, used whenever this page is running outside the
   // Claude platform (self-hosted, opened as a local file, etc.) where
   // window.claude / the "downloads" capability simply doesn't exist.
-  function fallbackBrowserDownload(filename, bytes) {
+  function fallbackBrowserDownload(filename, bytes, mime) {
     try {
-      var blob = new Blob([bytes], { type: "application/pdf" });
+      var blob = new Blob([bytes], { type: mime || "application/pdf" });
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
       a.href = url;
@@ -1594,6 +1856,80 @@
       return Promise.all(jobs).then(function () { return doc.save(); });
     });
   }
+
+  // ---------------- export current page as PNG ----------------
+  function buildCurrentPagePng() {
+    if (!state.previewAvailable || !state.pdfJsDoc) return Promise.reject({ code: "unavailable" });
+    var idx = state.currentPage;
+    return state.pdfJsDoc.getPage(idx + 1).then(function (page) {
+      var exportScale = 2; // roughly 144dpi — sharp enough to share or print
+      var viewport = page.getViewport({ scale: exportScale });
+      var canvas = document.createElement("canvas");
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      var ctx = canvas.getContext("2d");
+      return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+        var placementJobs = state.placements
+          .filter(function (p) { return p.pageIndex === idx; })
+          .map(function (p) {
+            return new Promise(function (resolve) {
+              var img = new Image();
+              img.onload = function () {
+                ctx.drawImage(img, p.left * exportScale, p.top * exportScale, p.w * exportScale, p.h * exportScale);
+                resolve();
+              };
+              img.onerror = resolve; // skip a broken placement image rather than fail the whole export
+              img.src = p.dataUrl;
+            });
+          });
+        return Promise.all(placementJobs).then(function () {
+          return new Promise(function (resolve, reject) {
+            canvas.toBlob(function (blob) {
+              if (!blob) { reject(new Error("toBlob failed")); return; }
+              blob.arrayBuffer().then(function (buf) { resolve(new Uint8Array(buf)); }, reject);
+            }, "image/png");
+          });
+        });
+      });
+    });
+  }
+
+  function pngFileNameForCurrentPage() {
+    var base = (state.originalFileName || "ملف.pdf").replace(/\.pdf$/i, "");
+    var suffix = state.pageCount > 1 ? (" - صفحة " + (state.currentPage + 1)) : "";
+    return base + suffix + ".png";
+  }
+
+  $("#downloadPngBtn").addEventListener("click", function () {
+    var btn = this;
+    btn.disabled = true;
+    var originalLabel = btn.textContent;
+    btn.textContent = "بيحضّر الصورة…";
+
+    buildCurrentPagePng().then(function (bytes) {
+      var filename = pngFileNameForCurrentPage();
+      return ensureDownloadsCapability().then(function (cap) {
+        if (cap) return cap.save({ filename: filename, data: bytes });
+        if (fallbackBrowserDownload(filename, bytes, "image/png")) return { status: "saved" };
+        throw { code: "unavailable", message: "no download mechanism available" };
+      });
+    }).then(function () {
+      toast("اتنزّلت الصورة بنجاح 🖼", "success");
+    }).catch(function (err) {
+      var code = err && err.code;
+      if (code === "declined") {
+        // user cancelled, no message needed
+      } else if (code === "unavailable") {
+        toast("مش متاح دلوقتي تصدير صورة للصفحة دي", "danger");
+      } else {
+        console.error(err);
+        toast("متقدرش نجهز الصورة دلوقتي، جرب تاني", "danger");
+      }
+    }).finally(function () {
+      btn.disabled = !state.previewAvailable;
+      btn.textContent = originalLabel;
+    });
+  });
 
   // ---------------- init ----------------
   loadSavedLibrary();
