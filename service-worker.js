@@ -5,15 +5,15 @@
 // falling back to the network for anything new — and whatever the network
 // returns gets cached for next time. Bump CACHE_NAME when the app shell
 // files change so old caches are cleaned up automatically.
-var CACHE_NAME = "pdf-signer-v1";
+var CACHE_NAME = "pdf-signer-v2";
 var APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/icon-maskable-192.png",
-  "./icons/icon-maskable-512.png"
+  "./icon-192.png",
+  "./icon-512.png",
+  "./icon-maskable-192.png",
+  "./icon-maskable-512.png"
 ];
 
 self.addEventListener("install", function (event) {
