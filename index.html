@@ -578,6 +578,8 @@
   }
 </style>
 
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2A4B94">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&family=Aref+Ruqaa+Ink&family=Caveat:wght@500;600;700&family=Dancing+Script:wght@600;700&display=swap">
 
@@ -1937,6 +1939,16 @@
   resizeDrawCanvas();
   initLibs();
   setTimeout(initLibs, 900); // libs load async; re-check shortly after
+
+  // Register the service worker so the app can be installed (e.g. via
+  // Edge/Chrome's "Install this site as an app") and keeps working offline
+  // afterwards. This file only exists when self-hosted (e.g. GitHub Pages) —
+  // on other hosts the registration just fails quietly and nothing changes.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("service-worker.js").catch(function () {});
+    });
+  }
 })();
 </script>
 </body>
